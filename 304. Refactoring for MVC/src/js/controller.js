@@ -17,6 +17,7 @@ const timeout = function (s) {
 ///////////////////////////////////////
 
 const controlRecipes = async function () {
+  console.log(recipeView);
   try {
     /* 2. читаем хаш */
     const id = window.location.hash.slice(1);

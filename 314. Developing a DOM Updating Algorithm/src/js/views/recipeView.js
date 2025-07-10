@@ -1,36 +1,28 @@
 import icons from 'url:../../img/icons.svg';
+import View from './View';
 
-class RecipeView {
+class RecipeView extends View {
   _parentElement = document.querySelector('.recipe');
-  _data;
+  _errorMessage = 'We could not find that recipe. Please try another one!';
+  _message = '';
 
-  render(data) {
-    this._data = data;
-    const markup = this._generateMarkup();
-    this._clear();
-    this._parentElement.insertAdjacentHTML('afterbegin', markup);
+  addHandlerRender(handler) {
+    ['hashchange', 'load'].forEach(ev => window.addEventListener(ev, handler));
   }
 
-  _clear() {
-    this._parentElement.innerHTML = '';
-  }
-
-  renderSpinner() {
-    const markup = `
-      <div class="spinner">
-        <svg>
-          <use href="${icons}#icon-loader"></use>
-        </svg>
-      </div>
-    `;
-    this._parentElement.innerHTML = '';
-    this._parentElement.insertAdjacentHTML('afterbegin', markup);
+  addHandlerUpdateServings(handler) {
+    this._parentElement.addEventListener('click', function (e) {
+      const btn = e.target.closest('.btn--update-servings');
+      if (!btn) return;
+      const { updateTo } = btn.dataset;
+      if (+updateTo > 0) handler(+updateTo);
+    });
   }
 
   _generateMarkup() {
     return `
         <figure class="recipe__fig">
-          <img src="${this._data.image}" alt="${
+              <img src="${this._data.image}" alt="${
       this._data.title
     }" class="recipe__img" />
               <h1 class="recipe__title">
@@ -58,12 +50,16 @@ class RecipeView {
                 <span class="recipe__info-text">servings</span>
     
                 <div class="recipe__info-buttons">
-                  <button class="btn--tiny btn--increase-servings">
+                  <button class="btn--tiny btn--update-servings" data-update-to="${
+                    this._data.servings - 1
+                  }">
                     <svg>
                       <use href="${icons}#icon-minus-circle"></use>
                     </svg>
                   </button>
-                  <button class="btn--tiny btn--increase-servings">
+                  <button class="btn--tiny btn--update-servings" data-update-to="${
+                    this._data.servings + 1
+                  }">
                     <svg>
                       <use href="${icons}#icon-plus-circle"></use>
                     </svg>
@@ -72,9 +68,7 @@ class RecipeView {
               </div>
     
               <div class="recipe__user-generated">
-                <svg>
-                  <use href="${icons}#icon-user"></use>
-                </svg>
+                
               </div>
               <button class="btn--round">
                 <svg class="">
@@ -129,5 +123,3 @@ class RecipeView {
   }
 }
 export default new RecipeView();
-
-/* Этот класс возвращает объект. в котором есть три метода. И мы можем пользоваться этим объектом. в любой части кода. _parentElement - это див куда мы будем вставлять разметку. _data это данные для нашей разметки  */
